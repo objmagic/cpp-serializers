@@ -1,3 +1,15 @@
+Heron stream manager experiment: serialization and deserialization benchmarks
+
+If you are building on OS X, Thrift may not compile because openssl's header
+files cannot be found. This is because recent OS X does not put openssl header
+files under directories that will be searched by gcc. One may need to do
+``brew install openssl && brew link openssl --force``. After that, make sure
+openssl header files exist or symlinked to ``/usr/local/include`` or other
+paths that will be searched by gcc (``/usr/include`` is not OK since on new
+version of OS X, you have no permission of doing so).
+
+---
+
 #### About
 
 Compare various data serialization libraries for C++.
