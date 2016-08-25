@@ -1,4 +1,4 @@
-Heron stream manager experiment: serialization and deserialization benchmarks
+### Heron stream manager experiment: serialization and deserialization benchmarks
 
 If you are building on OS X, Thrift may not compile because openssl's header
 files cannot be found. This is because recent OS X does not put openssl header
