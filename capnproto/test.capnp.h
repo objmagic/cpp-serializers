@@ -15,6 +15,10 @@ namespace capnp {
 namespace schemas {
 
 CAPNP_DECLARE_SCHEMA(b11f3695c22ca61e);
+CAPNP_DECLARE_SCHEMA(9664c2f4bd395282);
+CAPNP_DECLARE_SCHEMA(fe7ad608b323973b);
+CAPNP_DECLARE_SCHEMA(8a9b19a7806966c4);
+CAPNP_DECLARE_SCHEMA(83167c6c85b798c1);
 
 }  // namespace schemas
 }  // namespace capnp
@@ -30,6 +34,66 @@ struct Record {
 
   struct _capnpPrivate {
     CAPNP_DECLARE_STRUCT_HEADER(b11f3695c22ca61e, 0, 2)
+    #if !CAPNP_LITE
+    static constexpr ::capnp::_::RawBrandedSchema const* brand = &schema->defaultBrand;
+    #endif  // !CAPNP_LITE
+  };
+};
+
+struct StreamId {
+  StreamId() = delete;
+
+  class Reader;
+  class Builder;
+  class Pipeline;
+
+  struct _capnpPrivate {
+    CAPNP_DECLARE_STRUCT_HEADER(9664c2f4bd395282, 0, 2)
+    #if !CAPNP_LITE
+    static constexpr ::capnp::_::RawBrandedSchema const* brand = &schema->defaultBrand;
+    #endif  // !CAPNP_LITE
+  };
+};
+
+struct RootId {
+  RootId() = delete;
+
+  class Reader;
+  class Builder;
+  class Pipeline;
+
+  struct _capnpPrivate {
+    CAPNP_DECLARE_STRUCT_HEADER(fe7ad608b323973b, 2, 0)
+    #if !CAPNP_LITE
+    static constexpr ::capnp::_::RawBrandedSchema const* brand = &schema->defaultBrand;
+    #endif  // !CAPNP_LITE
+  };
+};
+
+struct HeronDataTuple {
+  HeronDataTuple() = delete;
+
+  class Reader;
+  class Builder;
+  class Pipeline;
+
+  struct _capnpPrivate {
+    CAPNP_DECLARE_STRUCT_HEADER(8a9b19a7806966c4, 1, 3)
+    #if !CAPNP_LITE
+    static constexpr ::capnp::_::RawBrandedSchema const* brand = &schema->defaultBrand;
+    #endif  // !CAPNP_LITE
+  };
+};
+
+struct HeronDataTupleSet {
+  HeronDataTupleSet() = delete;
+
+  class Reader;
+  class Builder;
+  class Pipeline;
+
+  struct _capnpPrivate {
+    CAPNP_DECLARE_STRUCT_HEADER(83167c6c85b798c1, 0, 2)
     #if !CAPNP_LITE
     static constexpr ::capnp::_::RawBrandedSchema const* brand = &schema->defaultBrand;
     #endif  // !CAPNP_LITE
@@ -131,6 +195,378 @@ private:
 };
 #endif  // !CAPNP_LITE
 
+class StreamId::Reader {
+public:
+  typedef StreamId Reads;
+
+  Reader() = default;
+  inline explicit Reader(::capnp::_::StructReader base): _reader(base) {}
+
+  inline ::capnp::MessageSize totalSize() const {
+    return _reader.totalSize().asPublic();
+  }
+
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const {
+    return ::capnp::_::structString(_reader, *_capnpPrivate::brand);
+  }
+#endif  // !CAPNP_LITE
+
+  inline bool hasIds() const;
+  inline  ::capnp::Text::Reader getIds() const;
+
+  inline bool hasComponentName() const;
+  inline  ::capnp::Text::Reader getComponentName() const;
+
+private:
+  ::capnp::_::StructReader _reader;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::List;
+  friend class ::capnp::MessageBuilder;
+  friend class ::capnp::Orphanage;
+};
+
+class StreamId::Builder {
+public:
+  typedef StreamId Builds;
+
+  Builder() = delete;  // Deleted to discourage incorrect usage.
+                       // You can explicitly initialize to nullptr instead.
+  inline Builder(decltype(nullptr)) {}
+  inline explicit Builder(::capnp::_::StructBuilder base): _builder(base) {}
+  inline operator Reader() const { return Reader(_builder.asReader()); }
+  inline Reader asReader() const { return *this; }
+
+  inline ::capnp::MessageSize totalSize() const { return asReader().totalSize(); }
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const { return asReader().toString(); }
+#endif  // !CAPNP_LITE
+
+  inline bool hasIds();
+  inline  ::capnp::Text::Builder getIds();
+  inline void setIds( ::capnp::Text::Reader value);
+  inline  ::capnp::Text::Builder initIds(unsigned int size);
+  inline void adoptIds(::capnp::Orphan< ::capnp::Text>&& value);
+  inline ::capnp::Orphan< ::capnp::Text> disownIds();
+
+  inline bool hasComponentName();
+  inline  ::capnp::Text::Builder getComponentName();
+  inline void setComponentName( ::capnp::Text::Reader value);
+  inline  ::capnp::Text::Builder initComponentName(unsigned int size);
+  inline void adoptComponentName(::capnp::Orphan< ::capnp::Text>&& value);
+  inline ::capnp::Orphan< ::capnp::Text> disownComponentName();
+
+private:
+  ::capnp::_::StructBuilder _builder;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  friend class ::capnp::Orphanage;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+};
+
+#if !CAPNP_LITE
+class StreamId::Pipeline {
+public:
+  typedef StreamId Pipelines;
+
+  inline Pipeline(decltype(nullptr)): _typeless(nullptr) {}
+  inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
+      : _typeless(kj::mv(typeless)) {}
+
+private:
+  ::capnp::AnyPointer::Pipeline _typeless;
+  friend class ::capnp::PipelineHook;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+};
+#endif  // !CAPNP_LITE
+
+class RootId::Reader {
+public:
+  typedef RootId Reads;
+
+  Reader() = default;
+  inline explicit Reader(::capnp::_::StructReader base): _reader(base) {}
+
+  inline ::capnp::MessageSize totalSize() const {
+    return _reader.totalSize().asPublic();
+  }
+
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const {
+    return ::capnp::_::structString(_reader, *_capnpPrivate::brand);
+  }
+#endif  // !CAPNP_LITE
+
+  inline  ::int32_t getTaskid() const;
+
+  inline  ::int64_t getKey() const;
+
+private:
+  ::capnp::_::StructReader _reader;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::List;
+  friend class ::capnp::MessageBuilder;
+  friend class ::capnp::Orphanage;
+};
+
+class RootId::Builder {
+public:
+  typedef RootId Builds;
+
+  Builder() = delete;  // Deleted to discourage incorrect usage.
+                       // You can explicitly initialize to nullptr instead.
+  inline Builder(decltype(nullptr)) {}
+  inline explicit Builder(::capnp::_::StructBuilder base): _builder(base) {}
+  inline operator Reader() const { return Reader(_builder.asReader()); }
+  inline Reader asReader() const { return *this; }
+
+  inline ::capnp::MessageSize totalSize() const { return asReader().totalSize(); }
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const { return asReader().toString(); }
+#endif  // !CAPNP_LITE
+
+  inline  ::int32_t getTaskid();
+  inline void setTaskid( ::int32_t value);
+
+  inline  ::int64_t getKey();
+  inline void setKey( ::int64_t value);
+
+private:
+  ::capnp::_::StructBuilder _builder;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  friend class ::capnp::Orphanage;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+};
+
+#if !CAPNP_LITE
+class RootId::Pipeline {
+public:
+  typedef RootId Pipelines;
+
+  inline Pipeline(decltype(nullptr)): _typeless(nullptr) {}
+  inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
+      : _typeless(kj::mv(typeless)) {}
+
+private:
+  ::capnp::AnyPointer::Pipeline _typeless;
+  friend class ::capnp::PipelineHook;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+};
+#endif  // !CAPNP_LITE
+
+class HeronDataTuple::Reader {
+public:
+  typedef HeronDataTuple Reads;
+
+  Reader() = default;
+  inline explicit Reader(::capnp::_::StructReader base): _reader(base) {}
+
+  inline ::capnp::MessageSize totalSize() const {
+    return _reader.totalSize().asPublic();
+  }
+
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const {
+    return ::capnp::_::structString(_reader, *_capnpPrivate::brand);
+  }
+#endif  // !CAPNP_LITE
+
+  inline  ::int64_t getKey() const;
+
+  inline bool hasRoots() const;
+  inline  ::capnp::List< ::capnp_test::RootId>::Reader getRoots() const;
+
+  inline bool hasValues() const;
+  inline  ::capnp::List< ::capnp::Text>::Reader getValues() const;
+
+  inline bool hasDeskTaskIds() const;
+  inline  ::capnp::List< ::int32_t>::Reader getDeskTaskIds() const;
+
+private:
+  ::capnp::_::StructReader _reader;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::List;
+  friend class ::capnp::MessageBuilder;
+  friend class ::capnp::Orphanage;
+};
+
+class HeronDataTuple::Builder {
+public:
+  typedef HeronDataTuple Builds;
+
+  Builder() = delete;  // Deleted to discourage incorrect usage.
+                       // You can explicitly initialize to nullptr instead.
+  inline Builder(decltype(nullptr)) {}
+  inline explicit Builder(::capnp::_::StructBuilder base): _builder(base) {}
+  inline operator Reader() const { return Reader(_builder.asReader()); }
+  inline Reader asReader() const { return *this; }
+
+  inline ::capnp::MessageSize totalSize() const { return asReader().totalSize(); }
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const { return asReader().toString(); }
+#endif  // !CAPNP_LITE
+
+  inline  ::int64_t getKey();
+  inline void setKey( ::int64_t value);
+
+  inline bool hasRoots();
+  inline  ::capnp::List< ::capnp_test::RootId>::Builder getRoots();
+  inline void setRoots( ::capnp::List< ::capnp_test::RootId>::Reader value);
+  inline  ::capnp::List< ::capnp_test::RootId>::Builder initRoots(unsigned int size);
+  inline void adoptRoots(::capnp::Orphan< ::capnp::List< ::capnp_test::RootId>>&& value);
+  inline ::capnp::Orphan< ::capnp::List< ::capnp_test::RootId>> disownRoots();
+
+  inline bool hasValues();
+  inline  ::capnp::List< ::capnp::Text>::Builder getValues();
+  inline void setValues( ::capnp::List< ::capnp::Text>::Reader value);
+  inline void setValues(::kj::ArrayPtr<const  ::capnp::Text::Reader> value);
+  inline  ::capnp::List< ::capnp::Text>::Builder initValues(unsigned int size);
+  inline void adoptValues(::capnp::Orphan< ::capnp::List< ::capnp::Text>>&& value);
+  inline ::capnp::Orphan< ::capnp::List< ::capnp::Text>> disownValues();
+
+  inline bool hasDeskTaskIds();
+  inline  ::capnp::List< ::int32_t>::Builder getDeskTaskIds();
+  inline void setDeskTaskIds( ::capnp::List< ::int32_t>::Reader value);
+  inline void setDeskTaskIds(::kj::ArrayPtr<const  ::int32_t> value);
+  inline  ::capnp::List< ::int32_t>::Builder initDeskTaskIds(unsigned int size);
+  inline void adoptDeskTaskIds(::capnp::Orphan< ::capnp::List< ::int32_t>>&& value);
+  inline ::capnp::Orphan< ::capnp::List< ::int32_t>> disownDeskTaskIds();
+
+private:
+  ::capnp::_::StructBuilder _builder;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  friend class ::capnp::Orphanage;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+};
+
+#if !CAPNP_LITE
+class HeronDataTuple::Pipeline {
+public:
+  typedef HeronDataTuple Pipelines;
+
+  inline Pipeline(decltype(nullptr)): _typeless(nullptr) {}
+  inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
+      : _typeless(kj::mv(typeless)) {}
+
+private:
+  ::capnp::AnyPointer::Pipeline _typeless;
+  friend class ::capnp::PipelineHook;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+};
+#endif  // !CAPNP_LITE
+
+class HeronDataTupleSet::Reader {
+public:
+  typedef HeronDataTupleSet Reads;
+
+  Reader() = default;
+  inline explicit Reader(::capnp::_::StructReader base): _reader(base) {}
+
+  inline ::capnp::MessageSize totalSize() const {
+    return _reader.totalSize().asPublic();
+  }
+
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const {
+    return ::capnp::_::structString(_reader, *_capnpPrivate::brand);
+  }
+#endif  // !CAPNP_LITE
+
+  inline bool hasStream() const;
+  inline  ::capnp_test::StreamId::Reader getStream() const;
+
+  inline bool hasTuples() const;
+  inline  ::capnp::List< ::capnp_test::HeronDataTuple>::Reader getTuples() const;
+
+private:
+  ::capnp::_::StructReader _reader;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::List;
+  friend class ::capnp::MessageBuilder;
+  friend class ::capnp::Orphanage;
+};
+
+class HeronDataTupleSet::Builder {
+public:
+  typedef HeronDataTupleSet Builds;
+
+  Builder() = delete;  // Deleted to discourage incorrect usage.
+                       // You can explicitly initialize to nullptr instead.
+  inline Builder(decltype(nullptr)) {}
+  inline explicit Builder(::capnp::_::StructBuilder base): _builder(base) {}
+  inline operator Reader() const { return Reader(_builder.asReader()); }
+  inline Reader asReader() const { return *this; }
+
+  inline ::capnp::MessageSize totalSize() const { return asReader().totalSize(); }
+#if !CAPNP_LITE
+  inline ::kj::StringTree toString() const { return asReader().toString(); }
+#endif  // !CAPNP_LITE
+
+  inline bool hasStream();
+  inline  ::capnp_test::StreamId::Builder getStream();
+  inline void setStream( ::capnp_test::StreamId::Reader value);
+  inline  ::capnp_test::StreamId::Builder initStream();
+  inline void adoptStream(::capnp::Orphan< ::capnp_test::StreamId>&& value);
+  inline ::capnp::Orphan< ::capnp_test::StreamId> disownStream();
+
+  inline bool hasTuples();
+  inline  ::capnp::List< ::capnp_test::HeronDataTuple>::Builder getTuples();
+  inline void setTuples( ::capnp::List< ::capnp_test::HeronDataTuple>::Reader value);
+  inline  ::capnp::List< ::capnp_test::HeronDataTuple>::Builder initTuples(unsigned int size);
+  inline void adoptTuples(::capnp::Orphan< ::capnp::List< ::capnp_test::HeronDataTuple>>&& value);
+  inline ::capnp::Orphan< ::capnp::List< ::capnp_test::HeronDataTuple>> disownTuples();
+
+private:
+  ::capnp::_::StructBuilder _builder;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+  friend class ::capnp::Orphanage;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::_::PointerHelpers;
+};
+
+#if !CAPNP_LITE
+class HeronDataTupleSet::Pipeline {
+public:
+  typedef HeronDataTupleSet Pipelines;
+
+  inline Pipeline(decltype(nullptr)): _typeless(nullptr) {}
+  inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
+      : _typeless(kj::mv(typeless)) {}
+
+  inline  ::capnp_test::StreamId::Pipeline getStream();
+private:
+  ::capnp::AnyPointer::Pipeline _typeless;
+  friend class ::capnp::PipelineHook;
+  template <typename, ::capnp::Kind>
+  friend struct ::capnp::ToDynamic_;
+};
+#endif  // !CAPNP_LITE
+
 // =======================================================================================
 
 inline bool Record::Reader::hasIds() const {
@@ -202,6 +638,285 @@ inline void Record::Builder::adoptStrings(
 }
 inline ::capnp::Orphan< ::capnp::List< ::capnp::Text>> Record::Builder::disownStrings() {
   return ::capnp::_::PointerHelpers< ::capnp::List< ::capnp::Text>>::disown(
+      _builder.getPointerField(1 * ::capnp::POINTERS));
+}
+
+inline bool StreamId::Reader::hasIds() const {
+  return !_reader.getPointerField(0 * ::capnp::POINTERS).isNull();
+}
+inline bool StreamId::Builder::hasIds() {
+  return !_builder.getPointerField(0 * ::capnp::POINTERS).isNull();
+}
+inline  ::capnp::Text::Reader StreamId::Reader::getIds() const {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(
+      _reader.getPointerField(0 * ::capnp::POINTERS));
+}
+inline  ::capnp::Text::Builder StreamId::Builder::getIds() {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(
+      _builder.getPointerField(0 * ::capnp::POINTERS));
+}
+inline void StreamId::Builder::setIds( ::capnp::Text::Reader value) {
+  ::capnp::_::PointerHelpers< ::capnp::Text>::set(
+      _builder.getPointerField(0 * ::capnp::POINTERS), value);
+}
+inline  ::capnp::Text::Builder StreamId::Builder::initIds(unsigned int size) {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::init(
+      _builder.getPointerField(0 * ::capnp::POINTERS), size);
+}
+inline void StreamId::Builder::adoptIds(
+    ::capnp::Orphan< ::capnp::Text>&& value) {
+  ::capnp::_::PointerHelpers< ::capnp::Text>::adopt(
+      _builder.getPointerField(0 * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::capnp::Text> StreamId::Builder::disownIds() {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::disown(
+      _builder.getPointerField(0 * ::capnp::POINTERS));
+}
+
+inline bool StreamId::Reader::hasComponentName() const {
+  return !_reader.getPointerField(1 * ::capnp::POINTERS).isNull();
+}
+inline bool StreamId::Builder::hasComponentName() {
+  return !_builder.getPointerField(1 * ::capnp::POINTERS).isNull();
+}
+inline  ::capnp::Text::Reader StreamId::Reader::getComponentName() const {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(
+      _reader.getPointerField(1 * ::capnp::POINTERS));
+}
+inline  ::capnp::Text::Builder StreamId::Builder::getComponentName() {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(
+      _builder.getPointerField(1 * ::capnp::POINTERS));
+}
+inline void StreamId::Builder::setComponentName( ::capnp::Text::Reader value) {
+  ::capnp::_::PointerHelpers< ::capnp::Text>::set(
+      _builder.getPointerField(1 * ::capnp::POINTERS), value);
+}
+inline  ::capnp::Text::Builder StreamId::Builder::initComponentName(unsigned int size) {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::init(
+      _builder.getPointerField(1 * ::capnp::POINTERS), size);
+}
+inline void StreamId::Builder::adoptComponentName(
+    ::capnp::Orphan< ::capnp::Text>&& value) {
+  ::capnp::_::PointerHelpers< ::capnp::Text>::adopt(
+      _builder.getPointerField(1 * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::capnp::Text> StreamId::Builder::disownComponentName() {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::disown(
+      _builder.getPointerField(1 * ::capnp::POINTERS));
+}
+
+inline  ::int32_t RootId::Reader::getTaskid() const {
+  return _reader.getDataField< ::int32_t>(
+      0 * ::capnp::ELEMENTS);
+}
+
+inline  ::int32_t RootId::Builder::getTaskid() {
+  return _builder.getDataField< ::int32_t>(
+      0 * ::capnp::ELEMENTS);
+}
+inline void RootId::Builder::setTaskid( ::int32_t value) {
+  _builder.setDataField< ::int32_t>(
+      0 * ::capnp::ELEMENTS, value);
+}
+
+inline  ::int64_t RootId::Reader::getKey() const {
+  return _reader.getDataField< ::int64_t>(
+      1 * ::capnp::ELEMENTS);
+}
+
+inline  ::int64_t RootId::Builder::getKey() {
+  return _builder.getDataField< ::int64_t>(
+      1 * ::capnp::ELEMENTS);
+}
+inline void RootId::Builder::setKey( ::int64_t value) {
+  _builder.setDataField< ::int64_t>(
+      1 * ::capnp::ELEMENTS, value);
+}
+
+inline  ::int64_t HeronDataTuple::Reader::getKey() const {
+  return _reader.getDataField< ::int64_t>(
+      0 * ::capnp::ELEMENTS);
+}
+
+inline  ::int64_t HeronDataTuple::Builder::getKey() {
+  return _builder.getDataField< ::int64_t>(
+      0 * ::capnp::ELEMENTS);
+}
+inline void HeronDataTuple::Builder::setKey( ::int64_t value) {
+  _builder.setDataField< ::int64_t>(
+      0 * ::capnp::ELEMENTS, value);
+}
+
+inline bool HeronDataTuple::Reader::hasRoots() const {
+  return !_reader.getPointerField(0 * ::capnp::POINTERS).isNull();
+}
+inline bool HeronDataTuple::Builder::hasRoots() {
+  return !_builder.getPointerField(0 * ::capnp::POINTERS).isNull();
+}
+inline  ::capnp::List< ::capnp_test::RootId>::Reader HeronDataTuple::Reader::getRoots() const {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::capnp_test::RootId>>::get(
+      _reader.getPointerField(0 * ::capnp::POINTERS));
+}
+inline  ::capnp::List< ::capnp_test::RootId>::Builder HeronDataTuple::Builder::getRoots() {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::capnp_test::RootId>>::get(
+      _builder.getPointerField(0 * ::capnp::POINTERS));
+}
+inline void HeronDataTuple::Builder::setRoots( ::capnp::List< ::capnp_test::RootId>::Reader value) {
+  ::capnp::_::PointerHelpers< ::capnp::List< ::capnp_test::RootId>>::set(
+      _builder.getPointerField(0 * ::capnp::POINTERS), value);
+}
+inline  ::capnp::List< ::capnp_test::RootId>::Builder HeronDataTuple::Builder::initRoots(unsigned int size) {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::capnp_test::RootId>>::init(
+      _builder.getPointerField(0 * ::capnp::POINTERS), size);
+}
+inline void HeronDataTuple::Builder::adoptRoots(
+    ::capnp::Orphan< ::capnp::List< ::capnp_test::RootId>>&& value) {
+  ::capnp::_::PointerHelpers< ::capnp::List< ::capnp_test::RootId>>::adopt(
+      _builder.getPointerField(0 * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::capnp::List< ::capnp_test::RootId>> HeronDataTuple::Builder::disownRoots() {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::capnp_test::RootId>>::disown(
+      _builder.getPointerField(0 * ::capnp::POINTERS));
+}
+
+inline bool HeronDataTuple::Reader::hasValues() const {
+  return !_reader.getPointerField(1 * ::capnp::POINTERS).isNull();
+}
+inline bool HeronDataTuple::Builder::hasValues() {
+  return !_builder.getPointerField(1 * ::capnp::POINTERS).isNull();
+}
+inline  ::capnp::List< ::capnp::Text>::Reader HeronDataTuple::Reader::getValues() const {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::capnp::Text>>::get(
+      _reader.getPointerField(1 * ::capnp::POINTERS));
+}
+inline  ::capnp::List< ::capnp::Text>::Builder HeronDataTuple::Builder::getValues() {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::capnp::Text>>::get(
+      _builder.getPointerField(1 * ::capnp::POINTERS));
+}
+inline void HeronDataTuple::Builder::setValues( ::capnp::List< ::capnp::Text>::Reader value) {
+  ::capnp::_::PointerHelpers< ::capnp::List< ::capnp::Text>>::set(
+      _builder.getPointerField(1 * ::capnp::POINTERS), value);
+}
+inline void HeronDataTuple::Builder::setValues(::kj::ArrayPtr<const  ::capnp::Text::Reader> value) {
+  ::capnp::_::PointerHelpers< ::capnp::List< ::capnp::Text>>::set(
+      _builder.getPointerField(1 * ::capnp::POINTERS), value);
+}
+inline  ::capnp::List< ::capnp::Text>::Builder HeronDataTuple::Builder::initValues(unsigned int size) {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::capnp::Text>>::init(
+      _builder.getPointerField(1 * ::capnp::POINTERS), size);
+}
+inline void HeronDataTuple::Builder::adoptValues(
+    ::capnp::Orphan< ::capnp::List< ::capnp::Text>>&& value) {
+  ::capnp::_::PointerHelpers< ::capnp::List< ::capnp::Text>>::adopt(
+      _builder.getPointerField(1 * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::capnp::List< ::capnp::Text>> HeronDataTuple::Builder::disownValues() {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::capnp::Text>>::disown(
+      _builder.getPointerField(1 * ::capnp::POINTERS));
+}
+
+inline bool HeronDataTuple::Reader::hasDeskTaskIds() const {
+  return !_reader.getPointerField(2 * ::capnp::POINTERS).isNull();
+}
+inline bool HeronDataTuple::Builder::hasDeskTaskIds() {
+  return !_builder.getPointerField(2 * ::capnp::POINTERS).isNull();
+}
+inline  ::capnp::List< ::int32_t>::Reader HeronDataTuple::Reader::getDeskTaskIds() const {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::int32_t>>::get(
+      _reader.getPointerField(2 * ::capnp::POINTERS));
+}
+inline  ::capnp::List< ::int32_t>::Builder HeronDataTuple::Builder::getDeskTaskIds() {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::int32_t>>::get(
+      _builder.getPointerField(2 * ::capnp::POINTERS));
+}
+inline void HeronDataTuple::Builder::setDeskTaskIds( ::capnp::List< ::int32_t>::Reader value) {
+  ::capnp::_::PointerHelpers< ::capnp::List< ::int32_t>>::set(
+      _builder.getPointerField(2 * ::capnp::POINTERS), value);
+}
+inline void HeronDataTuple::Builder::setDeskTaskIds(::kj::ArrayPtr<const  ::int32_t> value) {
+  ::capnp::_::PointerHelpers< ::capnp::List< ::int32_t>>::set(
+      _builder.getPointerField(2 * ::capnp::POINTERS), value);
+}
+inline  ::capnp::List< ::int32_t>::Builder HeronDataTuple::Builder::initDeskTaskIds(unsigned int size) {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::int32_t>>::init(
+      _builder.getPointerField(2 * ::capnp::POINTERS), size);
+}
+inline void HeronDataTuple::Builder::adoptDeskTaskIds(
+    ::capnp::Orphan< ::capnp::List< ::int32_t>>&& value) {
+  ::capnp::_::PointerHelpers< ::capnp::List< ::int32_t>>::adopt(
+      _builder.getPointerField(2 * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::capnp::List< ::int32_t>> HeronDataTuple::Builder::disownDeskTaskIds() {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::int32_t>>::disown(
+      _builder.getPointerField(2 * ::capnp::POINTERS));
+}
+
+inline bool HeronDataTupleSet::Reader::hasStream() const {
+  return !_reader.getPointerField(0 * ::capnp::POINTERS).isNull();
+}
+inline bool HeronDataTupleSet::Builder::hasStream() {
+  return !_builder.getPointerField(0 * ::capnp::POINTERS).isNull();
+}
+inline  ::capnp_test::StreamId::Reader HeronDataTupleSet::Reader::getStream() const {
+  return ::capnp::_::PointerHelpers< ::capnp_test::StreamId>::get(
+      _reader.getPointerField(0 * ::capnp::POINTERS));
+}
+inline  ::capnp_test::StreamId::Builder HeronDataTupleSet::Builder::getStream() {
+  return ::capnp::_::PointerHelpers< ::capnp_test::StreamId>::get(
+      _builder.getPointerField(0 * ::capnp::POINTERS));
+}
+#if !CAPNP_LITE
+inline  ::capnp_test::StreamId::Pipeline HeronDataTupleSet::Pipeline::getStream() {
+  return  ::capnp_test::StreamId::Pipeline(_typeless.getPointerField(0));
+}
+#endif  // !CAPNP_LITE
+inline void HeronDataTupleSet::Builder::setStream( ::capnp_test::StreamId::Reader value) {
+  ::capnp::_::PointerHelpers< ::capnp_test::StreamId>::set(
+      _builder.getPointerField(0 * ::capnp::POINTERS), value);
+}
+inline  ::capnp_test::StreamId::Builder HeronDataTupleSet::Builder::initStream() {
+  return ::capnp::_::PointerHelpers< ::capnp_test::StreamId>::init(
+      _builder.getPointerField(0 * ::capnp::POINTERS));
+}
+inline void HeronDataTupleSet::Builder::adoptStream(
+    ::capnp::Orphan< ::capnp_test::StreamId>&& value) {
+  ::capnp::_::PointerHelpers< ::capnp_test::StreamId>::adopt(
+      _builder.getPointerField(0 * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::capnp_test::StreamId> HeronDataTupleSet::Builder::disownStream() {
+  return ::capnp::_::PointerHelpers< ::capnp_test::StreamId>::disown(
+      _builder.getPointerField(0 * ::capnp::POINTERS));
+}
+
+inline bool HeronDataTupleSet::Reader::hasTuples() const {
+  return !_reader.getPointerField(1 * ::capnp::POINTERS).isNull();
+}
+inline bool HeronDataTupleSet::Builder::hasTuples() {
+  return !_builder.getPointerField(1 * ::capnp::POINTERS).isNull();
+}
+inline  ::capnp::List< ::capnp_test::HeronDataTuple>::Reader HeronDataTupleSet::Reader::getTuples() const {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::capnp_test::HeronDataTuple>>::get(
+      _reader.getPointerField(1 * ::capnp::POINTERS));
+}
+inline  ::capnp::List< ::capnp_test::HeronDataTuple>::Builder HeronDataTupleSet::Builder::getTuples() {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::capnp_test::HeronDataTuple>>::get(
+      _builder.getPointerField(1 * ::capnp::POINTERS));
+}
+inline void HeronDataTupleSet::Builder::setTuples( ::capnp::List< ::capnp_test::HeronDataTuple>::Reader value) {
+  ::capnp::_::PointerHelpers< ::capnp::List< ::capnp_test::HeronDataTuple>>::set(
+      _builder.getPointerField(1 * ::capnp::POINTERS), value);
+}
+inline  ::capnp::List< ::capnp_test::HeronDataTuple>::Builder HeronDataTupleSet::Builder::initTuples(unsigned int size) {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::capnp_test::HeronDataTuple>>::init(
+      _builder.getPointerField(1 * ::capnp::POINTERS), size);
+}
+inline void HeronDataTupleSet::Builder::adoptTuples(
+    ::capnp::Orphan< ::capnp::List< ::capnp_test::HeronDataTuple>>&& value) {
+  ::capnp::_::PointerHelpers< ::capnp::List< ::capnp_test::HeronDataTuple>>::adopt(
+      _builder.getPointerField(1 * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::capnp::List< ::capnp_test::HeronDataTuple>> HeronDataTupleSet::Builder::disownTuples() {
+  return ::capnp::_::PointerHelpers< ::capnp::List< ::capnp_test::HeronDataTuple>>::disown(
       _builder.getPointerField(1 * ::capnp::POINTERS));
 }
 
