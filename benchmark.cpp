@@ -253,8 +253,6 @@ capnproto_serialization_test(size_t iterations)
 {
     using namespace capnp_test;
 
-
-
     capnp::MallocMessageBuilder message;
     Record::Builder r1 = message.getRoot<Record>();
 
@@ -513,9 +511,9 @@ heron_flatbuffers_serialization_test(size_t iterations)
     // Number of tuples in HeronDataTupleSet
     size_t SIZE = 1024;
 
-    std::chrono::milliseconds total_build_time(0);
-    std::chrono::milliseconds total_serial_time(0);
-    std::chrono::milliseconds total_deserial_time(0);
+    std::chrono::microseconds total_build_time(0);
+    std::chrono::microseconds total_serial_time(0);
+    std::chrono::microseconds total_deserial_time(0);
 
     auto start = std::chrono::high_resolution_clock::now();
     for (size_t i = 0; i < iterations; i++) {
@@ -545,7 +543,7 @@ heron_flatbuffers_serialization_test(size_t iterations)
         auto heron_data_tuple_set_sample = CreateHeronDataTupleSet(builder, stream_id, hdts_final);
         builder.Finish(heron_data_tuple_set_sample);
         auto build_end = std::chrono::high_resolution_clock::now();
-        auto build_duration = std::chrono::duration_cast<std::chrono::milliseconds>(build_end - build_start);
+        auto build_duration = std::chrono::duration_cast<std::chrono::microseconds>(build_end - build_start);
         total_build_time += build_duration;
         // finish build
 
@@ -555,24 +553,24 @@ heron_flatbuffers_serialization_test(size_t iterations)
         auto sz = builder.GetSize();
         std::vector<char> buf(p, p + sz);
         auto serial_end = std::chrono::high_resolution_clock::now();
-        auto serial_duration = std::chrono::duration_cast<std::chrono::milliseconds>(serial_end - serial_start);
+        auto serial_duration = std::chrono::duration_cast<std::chrono::microseconds>(serial_end - serial_start);
         total_serial_time += serial_duration;
 
         auto deserial_start = std::chrono::high_resolution_clock::now();
         auto r2 = GetHeronDataTupleSet(buf.data());
         auto deserial_end = std::chrono::high_resolution_clock::now();
-        auto deserial_duration = std::chrono::duration_cast<std::chrono::milliseconds>(deserial_end - deserial_start);
+        auto deserial_duration = std::chrono::duration_cast<std::chrono::microseconds>(deserial_end - deserial_start);
         total_deserial_time += deserial_duration;
 
         builder.ReleaseBufferPointer();
     }
     // report
     auto finish = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count();
-    std::cout << "Total Heron flatbuffer: time = " << duration << " milliseconds" << std::endl << std::endl;
-    std::cout << "Total build time = " << total_build_time.count() << " milliseconds" << std::endl << std::endl;
-    std::cout << "Total serialization time = " << total_serial_time.count() << " milliseconds" << std::endl << std::endl;
-    std::cout << "Total deserialization time = " << total_deserial_time.count() << " milliseconds" << std::endl << std::endl;
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(finish - start).count();
+    std::cout << "Total Heron flatbuffer: time = " << duration << " microseconds" << std::endl << std::endl;
+    std::cout << "Total build time = " << total_build_time.count() << " microseconds" << std::endl << std::endl;
+    std::cout << "Total serialization time = " << total_serial_time.count() << " microseconds" << std::endl << std::endl;
+    std::cout << "Total deserialization time = " << total_deserial_time.count() << " microseconds" << std::endl << std::endl;
 
     return;
 }

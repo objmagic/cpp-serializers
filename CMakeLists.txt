@@ -295,4 +295,4 @@ add_executable(
 )
 add_dependencies(benchmark thrift msgpack protobuf capnproto boost cereal avro flatbuffers)
 target_link_libraries(benchmark ${LINKLIBS})
-set_target_properties(benchmark PROPERTIES COMPILE_FLAGS "-std=c++11")
+set_target_properties(benchmark PROPERTIES COMPILE_FLAGS "-O2 -std=c++11")
