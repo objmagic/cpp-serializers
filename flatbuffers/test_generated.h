@@ -8,53 +8,163 @@
 
 namespace flatbuffers_test {
 
-struct Record;
+struct StreamId;
+struct RootId;
+struct HeronDataTuple;
+struct HeronDataTupleSet;
 
-struct Record FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+MANUALLY_ALIGNED_STRUCT(8) RootId FLATBUFFERS_FINAL_CLASS {
+ private:
+  int32_t taskid_;
+  int32_t __padding0;
+  int64_t key_;
+
+ public:
+  RootId(int32_t _taskid, int64_t _key)
+    : taskid_(flatbuffers::EndianScalar(_taskid)), __padding0(0), key_(flatbuffers::EndianScalar(_key)) { (void)__padding0; }
+
+  int32_t taskid() const { return flatbuffers::EndianScalar(taskid_); }
+  int64_t key() const { return flatbuffers::EndianScalar(key_); }
+};
+STRUCT_END(RootId, 16);
+
+struct StreamId FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
-    VT_IDS = 4,
-    VT_STRINGS = 6
+    VT_ID = 4,
+    VT_COMPONENT_NAME = 6
   };
-  const flatbuffers::Vector<int64_t> *ids() const { return GetPointer<const flatbuffers::Vector<int64_t> *>(VT_IDS); }
-  const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *strings() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_STRINGS); }
+  const flatbuffers::String *id() const { return GetPointer<const flatbuffers::String *>(VT_ID); }
+  const flatbuffers::String *component_name() const { return GetPointer<const flatbuffers::String *>(VT_COMPONENT_NAME); }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<flatbuffers::uoffset_t>(verifier, VT_IDS) &&
-           verifier.Verify(ids()) &&
-           VerifyField<flatbuffers::uoffset_t>(verifier, VT_STRINGS) &&
-           verifier.Verify(strings()) &&
-           verifier.VerifyVectorOfStrings(strings()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_ID) &&
+           verifier.Verify(id()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_COMPONENT_NAME) &&
+           verifier.Verify(component_name()) &&
            verifier.EndTable();
   }
 };
 
-struct RecordBuilder {
+struct StreamIdBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_ids(flatbuffers::Offset<flatbuffers::Vector<int64_t>> ids) { fbb_.AddOffset(Record::VT_IDS, ids); }
-  void add_strings(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> strings) { fbb_.AddOffset(Record::VT_STRINGS, strings); }
-  RecordBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
-  RecordBuilder &operator=(const RecordBuilder &);
-  flatbuffers::Offset<Record> Finish() {
-    auto o = flatbuffers::Offset<Record>(fbb_.EndTable(start_, 2));
+  void add_id(flatbuffers::Offset<flatbuffers::String> id) { fbb_.AddOffset(StreamId::VT_ID, id); }
+  void add_component_name(flatbuffers::Offset<flatbuffers::String> component_name) { fbb_.AddOffset(StreamId::VT_COMPONENT_NAME, component_name); }
+  StreamIdBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  StreamIdBuilder &operator=(const StreamIdBuilder &);
+  flatbuffers::Offset<StreamId> Finish() {
+    auto o = flatbuffers::Offset<StreamId>(fbb_.EndTable(start_, 2));
     return o;
   }
 };
 
-inline flatbuffers::Offset<Record> CreateRecord(flatbuffers::FlatBufferBuilder &_fbb,
-   flatbuffers::Offset<flatbuffers::Vector<int64_t>> ids = 0,
-   flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> strings = 0) {
-  RecordBuilder builder_(_fbb);
-  builder_.add_strings(strings);
-  builder_.add_ids(ids);
+inline flatbuffers::Offset<StreamId> CreateStreamId(flatbuffers::FlatBufferBuilder &_fbb,
+   flatbuffers::Offset<flatbuffers::String> id = 0,
+   flatbuffers::Offset<flatbuffers::String> component_name = 0) {
+  StreamIdBuilder builder_(_fbb);
+  builder_.add_component_name(component_name);
+  builder_.add_id(id);
   return builder_.Finish();
 }
 
-inline const flatbuffers_test::Record *GetRecord(const void *buf) { return flatbuffers::GetRoot<flatbuffers_test::Record>(buf); }
+struct HeronDataTuple FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_KEY = 4,
+    VT_ROOTS = 6,
+    VT_VALUES = 8,
+    VT_DESK_TASK_IDS = 10
+  };
+  int64_t key() const { return GetField<int64_t>(VT_KEY, 0); }
+  const flatbuffers::Vector<const RootId *> *roots() const { return GetPointer<const flatbuffers::Vector<const RootId *> *>(VT_ROOTS); }
+  const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *values() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_VALUES); }
+  const flatbuffers::Vector<int32_t> *desk_task_ids() const { return GetPointer<const flatbuffers::Vector<int32_t> *>(VT_DESK_TASK_IDS); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<int64_t>(verifier, VT_KEY) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_ROOTS) &&
+           verifier.Verify(roots()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_VALUES) &&
+           verifier.Verify(values()) &&
+           verifier.VerifyVectorOfStrings(values()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_DESK_TASK_IDS) &&
+           verifier.Verify(desk_task_ids()) &&
+           verifier.EndTable();
+  }
+};
 
-inline bool VerifyRecordBuffer(flatbuffers::Verifier &verifier) { return verifier.VerifyBuffer<flatbuffers_test::Record>(); }
+struct HeronDataTupleBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_key(int64_t key) { fbb_.AddElement<int64_t>(HeronDataTuple::VT_KEY, key, 0); }
+  void add_roots(flatbuffers::Offset<flatbuffers::Vector<const RootId *>> roots) { fbb_.AddOffset(HeronDataTuple::VT_ROOTS, roots); }
+  void add_values(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> values) { fbb_.AddOffset(HeronDataTuple::VT_VALUES, values); }
+  void add_desk_task_ids(flatbuffers::Offset<flatbuffers::Vector<int32_t>> desk_task_ids) { fbb_.AddOffset(HeronDataTuple::VT_DESK_TASK_IDS, desk_task_ids); }
+  HeronDataTupleBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  HeronDataTupleBuilder &operator=(const HeronDataTupleBuilder &);
+  flatbuffers::Offset<HeronDataTuple> Finish() {
+    auto o = flatbuffers::Offset<HeronDataTuple>(fbb_.EndTable(start_, 4));
+    return o;
+  }
+};
 
-inline void FinishRecordBuffer(flatbuffers::FlatBufferBuilder &fbb, flatbuffers::Offset<flatbuffers_test::Record> root) { fbb.Finish(root); }
+inline flatbuffers::Offset<HeronDataTuple> CreateHeronDataTuple(flatbuffers::FlatBufferBuilder &_fbb,
+   int64_t key = 0,
+   flatbuffers::Offset<flatbuffers::Vector<const RootId *>> roots = 0,
+   flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> values = 0,
+   flatbuffers::Offset<flatbuffers::Vector<int32_t>> desk_task_ids = 0) {
+  HeronDataTupleBuilder builder_(_fbb);
+  builder_.add_key(key);
+  builder_.add_desk_task_ids(desk_task_ids);
+  builder_.add_values(values);
+  builder_.add_roots(roots);
+  return builder_.Finish();
+}
+
+struct HeronDataTupleSet FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_STREAM = 4,
+    VT_TUPLES = 6
+  };
+  const StreamId *stream() const { return GetPointer<const StreamId *>(VT_STREAM); }
+  const flatbuffers::Vector<flatbuffers::Offset<HeronDataTuple>> *tuples() const { return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<HeronDataTuple>> *>(VT_TUPLES); }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_STREAM) &&
+           verifier.VerifyTable(stream()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_TUPLES) &&
+           verifier.Verify(tuples()) &&
+           verifier.VerifyVectorOfTables(tuples()) &&
+           verifier.EndTable();
+  }
+};
+
+struct HeronDataTupleSetBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_stream(flatbuffers::Offset<StreamId> stream) { fbb_.AddOffset(HeronDataTupleSet::VT_STREAM, stream); }
+  void add_tuples(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<HeronDataTuple>>> tuples) { fbb_.AddOffset(HeronDataTupleSet::VT_TUPLES, tuples); }
+  HeronDataTupleSetBuilder(flatbuffers::FlatBufferBuilder &_fbb) : fbb_(_fbb) { start_ = fbb_.StartTable(); }
+  HeronDataTupleSetBuilder &operator=(const HeronDataTupleSetBuilder &);
+  flatbuffers::Offset<HeronDataTupleSet> Finish() {
+    auto o = flatbuffers::Offset<HeronDataTupleSet>(fbb_.EndTable(start_, 2));
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<HeronDataTupleSet> CreateHeronDataTupleSet(flatbuffers::FlatBufferBuilder &_fbb,
+   flatbuffers::Offset<StreamId> stream = 0,
+   flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<HeronDataTuple>>> tuples = 0) {
+  HeronDataTupleSetBuilder builder_(_fbb);
+  builder_.add_tuples(tuples);
+  builder_.add_stream(stream);
+  return builder_.Finish();
+}
+
+inline const flatbuffers_test::HeronDataTupleSet *GetHeronDataTupleSet(const void *buf) { return flatbuffers::GetRoot<flatbuffers_test::HeronDataTupleSet>(buf); }
+
+inline bool VerifyHeronDataTupleSetBuffer(flatbuffers::Verifier &verifier) { return verifier.VerifyBuffer<flatbuffers_test::HeronDataTupleSet>(); }
+
+inline void FinishHeronDataTupleSetBuffer(flatbuffers::FlatBufferBuilder &fbb, flatbuffers::Offset<flatbuffers_test::HeronDataTupleSet> root) { fbb.Finish(root); }
 
 }  // namespace flatbuffers_test
 
