@@ -1,8 +1,27 @@
 namespace flatbuffers_test;
 
-table Record {
-	ids:[long];
-	strings:[string];
+
+
+table StreamId {
+    id:string;
+    component_name:string;
 }
 
-root_type Record;
+struct RootId {
+    taskid: int;
+    key: long;
+}
+
+table HeronDataTuple {
+    key: long;
+    roots: [RootId];
+    values: [string];
+    desk_task_ids: [int];
+}
+
+table HeronDataTupleSet {
+    stream: StreamId;
+    tuples: [HeronDataTuple];
+}
+
+root_type HeronDataTupleSet;

@@ -1,6 +1,8 @@
 #include <string>
 #include <set>
 #include <iostream>
+#include <fstream>
+#include <cstdlib>
 #include <stdexcept>
 #include <memory>
 #include <chrono>
@@ -125,10 +127,13 @@ thrift_serialization_test(size_t iterations, ThriftSerializationProto proto = Th
     std::cout << tag << " time = " << duration << " milliseconds" << std::endl << std::endl;
 }
 
+
 void
 protobuf_serialization_test(size_t iterations)
 {
     using namespace protobuf_test;
+
+
 
     Record r1;
 
@@ -412,64 +417,63 @@ avro_serialization_test(size_t iterations)
 }
 
 void
-flatbuffers_serialization_test(size_t iterations)
+heron_flatbuffers_serialization_test(size_t iterations)
 {
     using namespace flatbuffers_test;
+    std::vector<std::string> v({"nathan", "mike", "jackson", "golda", "bertels"});
 
-    std::vector<flatbuffers::Offset<flatbuffers::String>> strings;
-    strings.reserve(kStringsCount);
+    size_t word_size = v.size();
 
+    // Prepare flatbuffer builder
     flatbuffers::FlatBufferBuilder builder;
-    for (size_t i = 0; i < kStringsCount; i++) {
-        strings.push_back(builder.CreateString(kStringValue));
-    }
 
-    auto ids_vec = builder.CreateVector(kIntegers);
-    auto strings_vec = builder.CreateVector(strings);
-    auto r1 = CreateRecord(builder, ids_vec, strings_vec);
+    // Generate [HeronDataTuple]
+    std::vector<flatbuffers::Offset<HeronDataTuple>> hdts_vector;
+    int64_t key = 0;
+    size_t SIZE = 32;
 
-    builder.Finish(r1);
-
-    auto p = reinterpret_cast<char*>(builder.GetBufferPointer());
-    auto sz = builder.GetSize();
-    std::vector<char> buf(p, p + sz);
-
-    auto r2 = GetRecord(buf.data());
-    if (r2->strings()->size() != kStringsCount || r2->ids()->size() != kIntegers.size()) {
-        throw std::logic_error("flatbuffer's case: deserialization failed");
-    }
-
-    std::cout << "flatbuffers: size = " << builder.GetSize() << " bytes" << std::endl;
-
-    builder.ReleaseBufferPointer();
 
     auto start = std::chrono::high_resolution_clock::now();
     for (size_t i = 0; i < iterations; i++) {
         builder.Clear();
-        strings.clear();
-        // buf.clear();
-
-        for (size_t i = 0; i < kStringsCount; i++) {
-            strings.push_back(builder.CreateString(kStringValue));
+        hdts_vector.clear();
+        // build
+        HeronDataTupleBuilder hdt_builder(builder);
+        // produce [HeronDataTuple]
+        for (size_t i = 0; i < SIZE; i++) {
+            std::vector<flatbuffers::Offset<flatbuffers::String>> vals;
+            vals.push_back(builder.CreateString(v[i % word_size]));
+            hdt_builder.add_key(key);
+            hdt_builder.add_values(builder.CreateVector(vals));
+            auto heron_data_tuple = hdt_builder.Finish();
+            builder.Finish(heron_data_tuple);
+            hdts_vector.push_back(heron_data_tuple);
         }
+        // produce [Sid]
+        auto sid = builder.CreateString("default");
+        auto component_name = builder.CreateString("word");
+        auto stream_id = CreateStreamId(builder, sid, component_name);
+        builder.Finish(stream_id);
+        // produce final HeronDataTupleSet
+        auto hdts_final = builder.CreateVector(hdts_vector);
+        auto heron_data_tuple_set_sample = CreateHeronDataTupleSet(builder, stream_id, hdts_final);
+        builder.Finish(heron_data_tuple_set_sample);
+        // finish build
+        std::cout << builder.GetSize() << std::endl;
 
-        auto ids_vec = builder.CreateVector(kIntegers);
-        auto strings_vec = builder.CreateVector(strings);
-        auto r1 = CreateRecord(builder, ids_vec, strings_vec);
-        builder.Finish(r1);
-
+        // prepare deserializing/serializing
         auto p = reinterpret_cast<char*>(builder.GetBufferPointer());
         auto sz = builder.GetSize();
         std::vector<char> buf(p, p + sz);
-        auto r2 = GetRecord(buf.data());
-        (void)r2->ids()[0];
-
+        auto r2 = GetHeronDataTupleSet(buf.data());
         builder.ReleaseBufferPointer();
     }
+    // report
     auto finish = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count();
+    std::cout << "Heron flatbuffer: time = " << duration << " milliseconds" << std::endl << std::endl;
 
-    std::cout << "flatbuffers: time = " << duration << " milliseconds" << std::endl << std::endl;
+    return;
 }
 
 int
@@ -540,8 +544,8 @@ main(int argc, char **argv)
             avro_serialization_test(iterations);
         }
 
-        if (names.empty() || names.find("flatbuffers") != names.end()) {
-            flatbuffers_serialization_test(iterations);
+        if (names.empty() || names.find("heron-flatbuffers") != names.end()) {
+            heron_flatbuffers_serialization_test(iterations);
         }
     } catch (std::exception &exc) {
         std::cerr << "Error: " << exc.what() << std::endl;
