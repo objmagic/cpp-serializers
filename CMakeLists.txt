@@ -282,8 +282,7 @@ set(FLATBUFFERS_SERIALIZATION_SOURCES ${cpp_serializers_SOURCE_DIR}/flatbuffers/
 set(BOOST_SERIALIZATION_SOURCES ${cpp_serializers_SOURCE_DIR}/boost/record.cpp)
 set(CEREAL_SERIALIZATION_SOURCES ${cpp_serializers_SOURCE_DIR}/cereal/record.cpp)
 
-add_executable(
-    benchmark
+set(BENCHMARK_SOURCES
     ${cpp_serializers_SOURCE_DIR}/benchmark.cpp
     ${THRIFT_SERIALIZATION_SOURCES}
     ${PROTOBUF_SERIALIZATION_SOURCES}
@@ -291,8 +290,56 @@ add_executable(
     ${BOOST_SERIALIZATION_SOURCES}
     ${CEREAL_SERIALIZATION_SOURCES}
     ${AVRO_SERIALIZATION_SOURCES}
-    ${FLATBUFFERS_SERIALIZATION_SOURCES}
-)
-add_dependencies(benchmark thrift msgpack protobuf capnproto boost cereal avro flatbuffers)
-target_link_libraries(benchmark ${LINKLIBS})
-set_target_properties(benchmark PROPERTIES COMPILE_FLAGS "-O2 -std=c++11")
+    ${FLATBUFFERS_SERIALIZATION_SOURCES})
+
+find_path(TCMALLOC_INCLUDE_DIR gperftools/tcmalloc.h)
+find_library(TCMALLOC_LIBRARY NAMES libtcmalloc.a)
+
+if(TCMALLOC_INCLUDE_DIR AND TCMALLOC_LIBRARY)
+    message(STATUS "Found TCMalloc")
+    message("tcmalloc header location: ${TCMALLOC_INCLUDE_DIR}")
+    message("tcmalloc library location: ${TCMALLOC_LIBRARY}")
+else()
+    message(FETAL_ERROR "TCMalloc was not found. Exitting...")
+endif()
+
+set(BENCHMARK_DEPS thrift msgpack protobuf capnproto boost cereal avro flatbuffers)
+
+# -O0
+add_executable(benchmark-o0 ${BENCHMARK_SOURCES})
+add_dependencies(benchmark-o0 ${BENCHMARK_DEPS})
+target_link_libraries(benchmark-o0 ${LINKLIBS})
+set_target_properties(benchmark-o0 PROPERTIES COMPILE_FLAGS "-O0 -std=c++11")
+
+# -O0 with TCMalloc
+add_executable(benchmark-o0-tc ${BENCHMARK_SOURCES})
+add_dependencies(benchmark-o0-tc ${BENCHMARK_DEPS})
+target_link_libraries(benchmark-o0-tc ${LINKLIBS})
+target_link_libraries(benchmark-o0-tc ${TCMALLOC_LIBRARY})
+set_target_properties(benchmark-o0-tc PROPERTIES COMPILE_FLAGS "-O0 -std=c++11")
+
+# -O1
+add_executable(benchmark-o1 ${BENCHMARK_SOURCES})
+add_dependencies(benchmark-o1 ${BENCHMARK_DEPS})
+target_link_libraries(benchmark-o1 ${LINKLIBS})
+set_target_properties(benchmark-o1 PROPERTIES COMPILE_FLAGS "-O1 -std=c++11")
+
+# -O1 with TCMalloc
+add_executable(benchmark-o1-tc ${BENCHMARK_SOURCES})
+add_dependencies(benchmark-o1-tc ${BENCHMARK_DEPS})
+target_link_libraries(benchmark-o1-tc ${LINKLIBS})
+target_link_libraries(benchmark-o1-tc ${TCMALLOC_LIBRARY})
+set_target_properties(benchmark-o1-tc PROPERTIES COMPILE_FLAGS "-O1 -std=c++11")
+
+# -O2
+add_executable(benchmark-o2 ${BENCHMARK_SOURCES})
+add_dependencies(benchmark-o2 ${BENCHMARK_DEPS})
+target_link_libraries(benchmark-o2 ${LINKLIBS})
+set_target_properties(benchmark-o2 PROPERTIES COMPILE_FLAGS "-O2 -std=c++11")
+
+# -O2 with TCMalloc
+add_executable(benchmark-o2-tc ${BENCHMARK_SOURCES})
+add_dependencies(benchmark-o2-tc ${BENCHMARK_DEPS})
+target_link_libraries(benchmark-o2-tc ${LINKLIBS})
+target_link_libraries(benchmark-o2-tc ${TCMALLOC_LIBRARY})
+set_target_properties(benchmark-o2-tc PROPERTIES COMPILE_FLAGS "-O2 -std=c++11")

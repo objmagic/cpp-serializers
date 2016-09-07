@@ -8,6 +8,10 @@ openssl header files exist or symlinked to ``/usr/local/include`` or other
 paths that will be searched by gcc (``/usr/include`` is not OK since on new
 version of OS X, you have no permission of doing so).
 
+Also make sure you have `TCMalloc` installed.
+
+After `benchmark` is compiled, run `run_benchmark.sh` to get benchmark result.
+
 ---
 
 #### About

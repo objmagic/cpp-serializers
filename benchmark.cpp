@@ -220,13 +220,14 @@ heron_capnproto_serialization_test(size_t iterations)
 
         total_serial_time += std::chrono::duration_cast<std::chrono::microseconds>(serial_finish - serial_start);
 
-        /* 57416 bytes
-        size_t size = 0;
-        for (auto segment: serialized) {
-            size += segment.asBytes().size();
-        }
+        if (i == 0) {
+            size_t size = 0;
+            for (auto segment: serialized) {
+                size += segment.asBytes().size();
+            }
 
-        std::cout << "capnproto HeronDataTupleSet size = " << size << " bytes" << std::endl; */
+            std::cout << "capnproto HeronDataTupleSet size = " << size << " bytes" << std::endl;
+        }
 
         // deserialize
         auto deserial_start = std::chrono::high_resolution_clock::now();
@@ -551,6 +552,9 @@ heron_flatbuffers_serialization_test(size_t iterations)
         auto serial_start = std::chrono::high_resolution_clock::now();
         auto p = reinterpret_cast<char*>(builder.GetBufferPointer());
         auto sz = builder.GetSize();
+        if (i == 0) {
+            std::cout << "flatbuffers HeronDataTupleSet size = " << sz << " bytes" << std::endl;
+        }
         std::vector<char> buf(p, p + sz);
         auto serial_end = std::chrono::high_resolution_clock::now();
         auto serial_duration = std::chrono::duration_cast<std::chrono::microseconds>(serial_end - serial_start);
