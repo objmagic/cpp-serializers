@@ -13,6 +13,15 @@ include(ExternalProject)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# search gperftools
+# for my Linux environment: TCMalloc library is put under ~/lib and
+# header is put under ~/include
+set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ~/lib /usr/lib /usr/lib64)
+set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ~/include /usr/include)
+
+message(STATUS "CMAKE_LIBRARY_PATH: ${CMAKE_LIBRARY_PATH}")
+message(STATUS "CMAKE_INCLUDE_PATH: ${CMAKE_INCLUDE_PATH}")
+
 CHECK_CXX_COMPILER_FLAG("-std=c++11" CXX11)
 if (NOT CXX11)
     message(FATAL_ERROR "C++ compiler doesn't support C++11")
@@ -294,13 +303,20 @@ set(BENCHMARK_SOURCES
 
 find_path(TCMALLOC_INCLUDE_DIR gperftools/tcmalloc.h)
 find_library(TCMALLOC_LIBRARY NAMES libtcmalloc.a)
-
 if(TCMALLOC_INCLUDE_DIR AND TCMALLOC_LIBRARY)
-    message(STATUS "Found TCMalloc")
-    message("tcmalloc header location: ${TCMALLOC_INCLUDE_DIR}")
-    message("tcmalloc library location: ${TCMALLOC_LIBRARY}")
+    message(STATUS "Found TCMalloc ^_^")
+    message(STATUS "tcmalloc header location: ${TCMALLOC_INCLUDE_DIR}")
+    message(STATUS "tcmalloc library location: ${TCMALLOC_LIBRARY}")
 else()
     message(FETAL_ERROR "TCMalloc was not found. Exitting...")
+endif()
+
+find_library(LIBUNWIND libunwind.so.8)
+if(LIBUNWIND)
+    message(STATUS "Found libunwind ^_^")
+    message(STATUS "libunwind location: ${LIBUNWIND}")
+else()
+    message(FETAL_ERROR "libunwind was not found. Exitting...")
 endif()
 
 set(BENCHMARK_DEPS thrift msgpack protobuf capnproto boost cereal avro flatbuffers)
@@ -315,6 +331,7 @@ set_target_properties(benchmark-o0 PROPERTIES COMPILE_FLAGS "-O0 -std=c++11")
 add_executable(benchmark-o0-tc ${BENCHMARK_SOURCES})
 add_dependencies(benchmark-o0-tc ${BENCHMARK_DEPS})
 target_link_libraries(benchmark-o0-tc ${LINKLIBS})
+target_link_libraries(benchmark-o0-tc ${LIBUNWIND})
 target_link_libraries(benchmark-o0-tc ${TCMALLOC_LIBRARY})
 set_target_properties(benchmark-o0-tc PROPERTIES COMPILE_FLAGS "-O0 -std=c++11")
 
@@ -328,6 +345,7 @@ set_target_properties(benchmark-o1 PROPERTIES COMPILE_FLAGS "-O1 -std=c++11")
 add_executable(benchmark-o1-tc ${BENCHMARK_SOURCES})
 add_dependencies(benchmark-o1-tc ${BENCHMARK_DEPS})
 target_link_libraries(benchmark-o1-tc ${LINKLIBS})
+target_link_libraries(benchmark-o1-tc ${LIBUNWIND})
 target_link_libraries(benchmark-o1-tc ${TCMALLOC_LIBRARY})
 set_target_properties(benchmark-o1-tc PROPERTIES COMPILE_FLAGS "-O1 -std=c++11")
 
@@ -341,5 +359,6 @@ set_target_properties(benchmark-o2 PROPERTIES COMPILE_FLAGS "-O2 -std=c++11")
 add_executable(benchmark-o2-tc ${BENCHMARK_SOURCES})
 add_dependencies(benchmark-o2-tc ${BENCHMARK_DEPS})
 target_link_libraries(benchmark-o2-tc ${LINKLIBS})
+target_link_libraries(benchmark-o2-tc ${LIBUNWIND})
 target_link_libraries(benchmark-o2-tc ${TCMALLOC_LIBRARY})
 set_target_properties(benchmark-o2-tc PROPERTIES COMPILE_FLAGS "-O2 -std=c++11")
