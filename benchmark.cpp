@@ -21,6 +21,31 @@
 
 #include "data.hpp"
 
+class Result
+{
+    public:
+        std::string name;
+        size_t num_loop;
+        size_t tuples_per_set;
+        size_t set_size;
+        std::chrono::microseconds total_loop_time;
+        std::chrono::microseconds total_build_time;
+        std::chrono::microseconds total_serializing_time;
+        std::chrono::microseconds total_deserializing_time;
+
+        std::string to_string() {
+            std::stringstream ss;
+            ss << "Test name: " << name << std::endl;
+            ss << "Number of loops executed: " << num_loop << std::endl;
+            ss << "Tuples per set: " << tuples_per_set << std::endl;
+            ss << "Size of set in bytes: " << set_size << std::endl;
+            ss << "Total loop time: " << total_loop_time.count() << std::endl;
+            ss << "Total build time: " << total_build_time.count() << std::endl;
+            ss << "Total serializing time: " << total_serializing_time.count() << std::endl;
+            ss << "Total deserializing time: " << total_deserializing_time.count() << std::endl;
+            return ss.str();
+        }
+};
 
 void
 protobuf_serialization_test(size_t iterations)
@@ -139,10 +164,6 @@ heron_capnproto_serialization_test(size_t iterations)
 
     return;
 
-}
-
-void do_something(const flatbuffers_test::HeronDataTupleSet* r){
-    return;
 }
 
 void
