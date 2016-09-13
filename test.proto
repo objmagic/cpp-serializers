@@ -4,3 +4,28 @@ message Record {
     repeated int64 ids = 1;
     repeated string strings = 2;
 }
+
+message RootId {
+  required int32 taskid = 1;
+  required sfixed64 key = 2;
+}
+
+message StreamId {
+  required string id = 1;
+  required string component_name = 2; // the guy who produced it
+}
+
+message HeronDataTuple {
+  required sfixed64 key = 1;
+  repeated RootId roots = 2;               // What are the roots
+  repeated bytes values = 3;               // The actual payload
+  // If present, this set of tuples must be sent
+  // to these destination global task ids as well
+  // Only valid for data tuples from instance to stmgr
+  repeated int32 dest_task_ids = 4;
+}
+
+message HeronDataTupleSet {
+  required StreamId stream = 1;
+  repeated HeronDataTuple tuples = 2;
+}

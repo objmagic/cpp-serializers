@@ -21,6 +21,7 @@
 
 #include "data.hpp"
 
+size_t iterations;
 class Result
 {
     public:
@@ -39,10 +40,14 @@ class Result
             ss << "Number of loops executed: " << num_loop << std::endl;
             ss << "Tuples per set: " << tuples_per_set << std::endl;
             ss << "Size of set in bytes: " << set_size << std::endl;
-            ss << "Total loop time: " << total_loop_time.count() << std::endl;
-            ss << "Total build time: " << total_build_time.count() << std::endl;
-            ss << "Total serializing time: " << total_serializing_time.count() << std::endl;
-            ss << "Total deserializing time: " << total_deserializing_time.count() << std::endl;
+            ss << "Total loop time in microseconds: "
+              << total_loop_time.count() << std::endl;
+            ss << "Total build time in microseconds: "
+              << total_build_time.count() << std::endl;
+            ss << "Total serializing time in microseconds: "
+              << total_serializing_time.count() << std::endl;
+            ss << "Total deserializing time in microseconds: "
+              << total_deserializing_time.count();
             return ss.str();
         }
 };
@@ -88,19 +93,22 @@ protobuf_serialization_test(size_t iterations)
     std::cout << "protobuf: time = " << duration << " milliseconds" << std::endl << std::endl;
 }
 
-void
-heron_capnproto_serialization_test(size_t iterations)
+Result
+heron_capnproto_serialization_test()
 {
     using namespace capnp_test;
 
     std::vector<std::string> v({"nathan", "mike", "jackson", "golda", "bertels"});
     size_t word_size = v.size();
 
+    std::chrono::microseconds total_loop_time(0);
     std::chrono::microseconds total_build_time(0);
     std::chrono::microseconds total_serial_time(0);
     std::chrono::microseconds total_deserial_time(0);
 
     auto start = std::chrono::high_resolution_clock::now();
+    size_t SIZE = 1024;
+    size_t tuple_set_size = 0;
 
     for (size_t i = 0; i < iterations; i++) {
 
@@ -116,7 +124,6 @@ heron_capnproto_serialization_test(size_t iterations)
         stream_id_builder.setComponentName("word");
 
         // each tuple set has 1024 tuples
-        size_t SIZE = 1024;
 
         // get List(HeronDataTuple) builder and build them
         ::capnp::List<HeronDataTuple>::Builder hdt_list_builder = hdts_builder.initTuples(SIZE);
@@ -127,7 +134,8 @@ heron_capnproto_serialization_test(size_t iterations)
         }
 
         auto build_finish = std::chrono::high_resolution_clock::now();
-        total_build_time += std::chrono::duration_cast<std::chrono::microseconds>(build_finish - build_start);
+        total_build_time +=
+          std::chrono::duration_cast<std::chrono::microseconds>(build_finish - build_start);
 
         // serialize
         auto serial_start = std::chrono::high_resolution_clock::now();
@@ -135,15 +143,15 @@ heron_capnproto_serialization_test(size_t iterations)
                 message.getSegmentsForOutput();
         auto serial_finish = std::chrono::high_resolution_clock::now();
 
-        total_serial_time += std::chrono::duration_cast<std::chrono::microseconds>(serial_finish - serial_start);
+        total_serial_time +=
+          std::chrono::duration_cast<std::chrono::microseconds>(serial_finish - serial_start);
 
         if (i == 0) {
             size_t size = 0;
             for (auto segment: serialized) {
                 size += segment.asBytes().size();
             }
-
-            std::cout << "capnproto HeronDataTupleSet size = " << size << " bytes" << std::endl;
+            tuple_set_size = size;
         }
 
         // deserialize
@@ -151,23 +159,29 @@ heron_capnproto_serialization_test(size_t iterations)
         capnp::SegmentArrayMessageReader reader(serialized);
         auto hdts_from_serial = reader.getRoot<HeronDataTupleSet>();
         auto deserial_finish = std::chrono::high_resolution_clock::now();
-        total_deserial_time += std::chrono::duration_cast<std::chrono::microseconds>(deserial_finish - deserial_start);
+        total_deserial_time +=
+          std::chrono::duration_cast<std::chrono::microseconds>(deserial_finish - deserial_start);
     }
 
     auto finish = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(finish - start).count();
-    std::cout << "Heron capnproto: time = " << duration << " microseconds ";
-    std::cout << "iterations = " << iterations << std::endl << std::endl;
-    std::cout << "Total build time = " << total_build_time.count() << " microseconds " << std::endl;
-    std::cout << "Total serializing time = " << total_serial_time.count() << " microseconds " << std::endl;
-    std::cout << "Total deserializing time = " << total_deserial_time.count() << " microseconds " << std::endl;
+    auto total_time = std::chrono::duration_cast<std::chrono::microseconds>(finish - start);
 
-    return;
+    Result r = Result();
+    r.name = "CapNProto";
+    r.num_loop = iterations;
+    r.tuples_per_set = SIZE;
+    r.set_size = tuple_set_size;
+    r.total_loop_time = total_time;
+    r.total_build_time = total_build_time;
+    r.total_serializing_time = total_serial_time;
+    r.total_deserializing_time = total_deserial_time;
+
+    return r;
 
 }
 
-void
-heron_flatbuffers_serialization_test(size_t iterations)
+Result
+heron_flatbuffers_serialization_test()
 {
     using namespace flatbuffers_test;
     std::vector<std::string> v({"nathan", "mike", "jackson", "golda", "bertels"});
@@ -183,12 +197,15 @@ heron_flatbuffers_serialization_test(size_t iterations)
 
     // Number of tuples in HeronDataTupleSet
     size_t SIZE = 1024;
+    size_t tuple_set_size = 0;
 
+    std::chrono::microseconds total_loop_time(0);
     std::chrono::microseconds total_build_time(0);
     std::chrono::microseconds total_serial_time(0);
     std::chrono::microseconds total_deserial_time(0);
 
     auto start = std::chrono::high_resolution_clock::now();
+
     for (size_t i = 0; i < iterations; i++) {
         builder.Clear();
         hdts_vector.clear();
@@ -213,10 +230,12 @@ heron_flatbuffers_serialization_test(size_t iterations)
         builder.Finish(stream_id);
         // produce final HeronDataTupleSet
         auto hdts_final = builder.CreateVector(hdts_vector);
-        auto heron_data_tuple_set_sample = CreateHeronDataTupleSet(builder, stream_id, hdts_final);
+        auto heron_data_tuple_set_sample =
+          CreateHeronDataTupleSet(builder, stream_id, hdts_final);
         builder.Finish(heron_data_tuple_set_sample);
         auto build_end = std::chrono::high_resolution_clock::now();
-        auto build_duration = std::chrono::duration_cast<std::chrono::microseconds>(build_end - build_start);
+        auto build_duration =
+          std::chrono::duration_cast<std::chrono::microseconds>(build_end - build_start);
         total_build_time += build_duration;
         // finish build
 
@@ -229,25 +248,33 @@ heron_flatbuffers_serialization_test(size_t iterations)
         }
         std::vector<char> buf(p, p + sz);
         auto serial_end = std::chrono::high_resolution_clock::now();
-        auto serial_duration = std::chrono::duration_cast<std::chrono::microseconds>(serial_end - serial_start);
+        auto serial_duration =
+          std::chrono::duration_cast<std::chrono::microseconds>(serial_end - serial_start);
         total_serial_time += serial_duration;
 
         auto deserial_start = std::chrono::high_resolution_clock::now();
         auto r2 = GetHeronDataTupleSet(buf.data());
         auto deserial_end = std::chrono::high_resolution_clock::now();
-        auto deserial_duration = std::chrono::duration_cast<std::chrono::microseconds>(deserial_end - deserial_start);
+        auto deserial_duration =
+          std::chrono::duration_cast<std::chrono::microseconds>(deserial_end - deserial_start);
         total_deserial_time += deserial_duration;
         builder.ReleaseBufferPointer();
     }
     // report
     auto finish = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(finish - start).count();
-    std::cout << "Total Heron flatbuffer: time = " << duration << " microseconds" << std::endl << std::endl;
-    std::cout << "Total build time = " << total_build_time.count() << " microseconds" << std::endl << std::endl;
-    std::cout << "Total serialization time = " << total_serial_time.count() << " microseconds" << std::endl << std::endl;
-    std::cout << "Total deserialization time = " << total_deserial_time.count() << " microseconds" << std::endl << std::endl;
+    auto total_time = std::chrono::duration_cast<std::chrono::microseconds>(finish - start);
 
-    return;
+    Result r = Result();
+    r.name = "FlatBuffer";
+    r.num_loop = iterations;
+    r.tuples_per_set = SIZE;
+    r.set_size = tuple_set_size;
+    r.total_loop_time = total_time;
+    r.total_build_time = total_build_time;
+    r.total_serializing_time = total_serial_time;
+    r.total_deserializing_time = total_deserial_time;
+
+    return r;
 }
 
 int
@@ -256,14 +283,15 @@ main(int argc, char **argv)
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
     if (argc < 2) {
-        std::cout << "usage: " << argv[0] << " N [thrift-binary thrift-compact protobuf boost msgpack cereal avro capnproto flatbuffers]";
+        std::cout << "usage: " << argv[0] \
+          << " N [thrift-binary thrift-compact protobuf boost "
+          << "msgpack cereal avro capnproto flatbuffers]";
         std::cout << std::endl << std::endl;
         std::cout << "arguments: " << std::endl;
         std::cout << " N  -- number of iterations" << std::endl << std::endl;
         return EXIT_SUCCESS;
     }
 
-    size_t iterations;
 
     try {
         iterations = boost::lexical_cast<size_t>(argv[1]);
@@ -281,10 +309,6 @@ main(int argc, char **argv)
         }
     }
 
-    std::cout << "performing " << iterations << " iterations" << std::endl << std::endl;
-
-    /*std::cout << "total size: " << sizeof(kIntegerValue) * kIntegersCount + kStringValue.size() * kStringsCount << std::endl;*/
-
     try {
 
         if (names.empty() || names.find("protobuf") != names.end()) {
@@ -292,11 +316,13 @@ main(int argc, char **argv)
         }
 
         if (names.empty() || names.find("heron-capnproto") != names.end()) {
-            heron_capnproto_serialization_test(iterations);
+          Result r = heron_capnproto_serialization_test();
+          std::cout << r.to_string() << std::endl;
         }
 
         if (names.empty() || names.find("heron-flatbuffers") != names.end()) {
-            heron_flatbuffers_serialization_test(iterations);
+          Result r = heron_flatbuffers_serialization_test();
+          std::cout << r.to_string() << std::endl;
         }
     } catch (std::exception &exc) {
         std::cerr << "Error: " << exc.what() << std::endl;
