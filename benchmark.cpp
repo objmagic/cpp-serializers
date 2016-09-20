@@ -159,10 +159,10 @@ heron_capnproto_serialization_test()
 
         // get List(HeronDataTuple) builder and build them
         ::capnp::List<HeronDataTuple>::Builder hdt_list_builder = hdts_builder.initTuples(SIZE);
-        for (size_t i = 0; i < SIZE; i++) {
-            hdt_list_builder[i].setKey(0);
-            ::capnp::List<::capnp::Text>::Builder root_ids_list = hdt_list_builder[i].initValues(1);
-            root_ids_list.set(0, v[i % word_size]);
+        for (size_t j = 0; j < SIZE; j++) {
+            hdt_list_builder[j].setKey(0);
+            ::capnp::List<::capnp::Text>::Builder root_ids_list = hdt_list_builder[j].initValues(1);
+            root_ids_list.set(0, v[j % word_size]);
         }
 
         auto build_finish = std::chrono::high_resolution_clock::now();
@@ -269,9 +269,9 @@ heron_flatbuffers_serialization_test()
         // start build
         HeronDataTupleBuilder hdt_builder(builder);
         // produce [HeronDataTuple]
-        for (size_t i = 0; i < SIZE; i++) {
+        for (size_t j = 0; j < SIZE; j++) {
             std::vector<flatbuffers::Offset<flatbuffers::String>> vals;
-            vals.push_back(builder.CreateString(v[i % word_size]));
+            vals.push_back(builder.CreateString(v[j % word_size]));
             hdt_builder.add_key(key);
             hdt_builder.add_values(builder.CreateVector(vals));
             auto heron_data_tuple = hdt_builder.Finish();
