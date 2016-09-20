@@ -98,21 +98,53 @@ heron_capnproto_serialization_test()
 {
     using namespace capnp_test;
 
+    capnp::MallocMessageBuilder message;
+
     std::vector<std::string> v({"nathan", "mike", "jackson", "golda", "bertels"});
     size_t word_size = v.size();
+    size_t SIZE = 1024;
+    size_t tuple_set_size = 0;
 
+    // build, serialize, and deserialize one data tuple set
+    // verify serialization/deserialization work, get the data tuple set size
+    HeronDataTupleSet::Builder hdts_builder0 = message.getRoot<HeronDataTupleSet>();
+
+    StreamId::Builder stream_id_builder0 = hdts_builder0.initStream();
+    stream_id_builder0.setIds("default");
+    stream_id_builder0.setComponentName("word");
+
+    ::capnp::List<HeronDataTuple>::Builder hdt_list_builder0 = hdts_builder0.initTuples(SIZE);
+    for (size_t i = 0; i < SIZE; i++) {
+        hdt_list_builder0[i].setKey(0);
+        ::capnp::List<::capnp::Text>::Builder root_ids_list0 = hdt_list_builder0[i].initValues(1);
+        root_ids_list0.set(0, v[i % word_size]);
+    }
+
+    // serialize
+    kj::ArrayPtr<const kj::ArrayPtr<const capnp::word>> serialized0 =
+            message.getSegmentsForOutput();
+    for (auto segment: serialized0) {
+        tuple_set_size += segment.asBytes().size();
+    }
+
+    // deserialize
+    capnp::SegmentArrayMessageReader reader0(serialized0);
+    auto hdts_from_serial0 = reader0.getRoot<HeronDataTupleSet>();
+
+    // make sure serialization/deserialization work fine
+    if (hdts_from_serial0.getTuples().size() != SIZE) {
+      throw std::logic_error("capnproto's case: deserialization failed");
+    }
+
+    // start actual loop benchmarking
     std::chrono::microseconds total_loop_time(0);
     std::chrono::microseconds total_build_time(0);
     std::chrono::microseconds total_serial_time(0);
     std::chrono::microseconds total_deserial_time(0);
 
     auto start = std::chrono::high_resolution_clock::now();
-    size_t SIZE = 1024;
-    size_t tuple_set_size = 0;
 
     for (size_t i = 0; i < iterations; i++) {
-
-        capnp::MallocMessageBuilder message;
 
         auto build_start = std::chrono::high_resolution_clock::now();
         // create HeronDataTupleSet builder
@@ -146,14 +178,6 @@ heron_capnproto_serialization_test()
         total_serial_time +=
           std::chrono::duration_cast<std::chrono::microseconds>(serial_finish - serial_start);
 
-        if (i == 0) {
-            size_t size = 0;
-            for (auto segment: serialized) {
-                size += segment.asBytes().size();
-            }
-            tuple_set_size = size;
-        }
-
         // deserialize
         auto deserial_start = std::chrono::high_resolution_clock::now();
         capnp::SegmentArrayMessageReader reader(serialized);
@@ -177,7 +201,6 @@ heron_capnproto_serialization_test()
     r.total_deserializing_time = total_deserial_time;
 
     return r;
-
 }
 
 Result
@@ -188,16 +211,48 @@ heron_flatbuffers_serialization_test()
 
     size_t word_size = v.size();
 
+    size_t SIZE = 1024;
+
     // Prepare flatbuffer builder
     flatbuffers::FlatBufferBuilder builder;
 
     // Generate [HeronDataTuple]
     std::vector<flatbuffers::Offset<HeronDataTuple>> hdts_vector;
+    hdts_vector.reserve(SIZE);
+
     int64_t key = 0;
 
-    // Number of tuples in HeronDataTupleSet
-    size_t SIZE = 1024;
-    size_t tuple_set_size = 0;
+    size_t tuple_set_size;
+
+    HeronDataTupleBuilder hdt_builder(builder);
+    for (size_t i = 0; i < SIZE; i++) {
+        std::vector<flatbuffers::Offset<flatbuffers::String>> vals;
+        vals.push_back(builder.CreateString(v[i % word_size]));
+        hdt_builder.add_key(key);
+        hdt_builder.add_values(builder.CreateVector(vals));
+        auto heron_data_tuple = hdt_builder.Finish();
+        builder.Finish(heron_data_tuple);
+        hdts_vector.push_back(heron_data_tuple);
+    }
+
+    auto sid = builder.CreateString("default");
+    auto component_name = builder.CreateString("word");
+    auto stream_id = CreateStreamId(builder, sid, component_name);
+    builder.Finish(stream_id);
+
+    auto hdts_final = builder.CreateVector(hdts_vector);
+    auto heron_data_tuple_set_sample =
+      CreateHeronDataTupleSet(builder, stream_id, hdts_final);
+    builder.Finish(heron_data_tuple_set_sample);
+    tuple_set_size = builder.GetSize();
+
+    // prepare deserializing/serializing
+    auto p = reinterpret_cast<char*>(builder.GetBufferPointer());
+
+    auto r2 = GetHeronDataTupleSet(p);
+    if (r2->tuples()->size() != SIZE) {
+        throw std::logic_error("flatbuffer's case: deserialization failed");
+    }
 
     std::chrono::microseconds total_loop_time(0);
     std::chrono::microseconds total_build_time(0);
@@ -243,9 +298,6 @@ heron_flatbuffers_serialization_test()
         auto serial_start = std::chrono::high_resolution_clock::now();
         auto p = reinterpret_cast<char*>(builder.GetBufferPointer());
         auto sz = builder.GetSize();
-        if (i == 0) {
-            std::cout << "flatbuffers HeronDataTupleSet size = " << sz << " bytes" << std::endl;
-        }
         std::vector<char> buf(p, p + sz);
         auto serial_end = std::chrono::high_resolution_clock::now();
         auto serial_duration =
